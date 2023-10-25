@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Results{% endblock %}
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Uploaded Image</title>
+  </head>
+  <body>
+    <img src="{{'uploads\\' + filename}}"  alt="cantfind image">
+  	<h1>Results</h1>
+	<ul>
+        <h2>{{prediction[0]}} : {{conf}}%</h2>
+
+	</ul>
+  </body>
+</html>
+{% endblock %}
