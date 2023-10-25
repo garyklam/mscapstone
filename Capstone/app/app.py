@@ -31,7 +31,7 @@ class Predictor():
                             'Tricholoma_portentosum', 'Tricholoma_sulphureum']
 
 
-        PATH = "CNN_test\\5_9_species_effnet0_adam_10.pt"
+        PATH = "instance\\5_9_species_effnet0_adam_10.pt"
 
         # Replace the final fully connected layer
         # num_features = self.model.fc.in_features
