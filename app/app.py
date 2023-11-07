@@ -19,7 +19,7 @@ class Predictor():
         #     self.specieslist.append(dir)
         #
         # print(self.specieslist)
-        conn = sqlite3.connect('/static/Species_info.db')
+        conn = sqlite3.connect('static/Species_info.db')
         conn.row_factory = sqlite3.Row
         self.cursor = conn.cursor()
         self.specieslist = ['Agaricus_arvensis', 'Agaricus_bernardii', 'Agaricus_bisporus', 'Agaricus_campestris', 'Agaricus_moelleri', 'Agaricus_xanthodermus',
@@ -32,7 +32,7 @@ class Predictor():
                             'Tricholoma_portentosum', 'Tricholoma_sulphureum']
 
 
-        PATH = "/static/5_9_species_effnet0_adam_10.pt"
+        PATH = "static/5_9_species_effnet0_adam_10.pt"
 
         # Replace the final fully connected layer
         # num_features = self.model.fc.in_features
@@ -70,19 +70,19 @@ class Predictor():
 
 app = Flask(__name__)
 
-app.config['UPLOAD_FOLDER'] = '/static/uploads'
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png', 'gif'}
 
 
 @app.before_request
 def before_request():
     g.predictor = Predictor()
-    g.user_db = sqlite3.connect('/static/User_labels.db')
+    g.user_db = sqlite3.connect('static/Labels.db')
     g.user_db.row_factory = sqlite3.Row
-    with open("/static/featuresynonyms.txt") as file:
+    with open("static/featuresynonyms.txt") as file:
         synonyms = file.read()
     g.synonyms = json.loads(synonyms)
-    g.features = {'Cap Shape': ['Convex', 'Ovoid', 'Cylindric', 'Conical', 'Cuspidate', 'Campanulate', 'Umbonate', 'Papillate', 'Plane', 'Umbilicate', 'Depressed', 'Infundibuliform'], 'Cap Texture': ['Smooth', 'Uneven', 'Rugose', 'Scrobiculate', 'Virgate', 'Sericeous', 'Fibrilose', 'Squamose', 'Pulverulent', 'Zonate', 'Areolate', 'Glutinous', 'Pubescent', 'Floccose', 'Hispid', 'Villose'], 'Cap Color': ['White', 'Tan', 'Brown', 'Black', 'Yellow', 'Red', 'Orange', 'Purple'], 'Cap Margins': ['Entire', 'Appendiculate', 'Striate', 'Sulcate', 'Pilcate', 'Split', 'Lacerate', 'Hairy', 'Undulating', 'Serrate'], 'Gill Attachment': ['Adnate', 'Adnexed', 'Sinuate', 'Seceding', 'Decurrent', 'Subdecurrent', 'Free', 'Collared'], 'Gill Spacing': ['Crowded', 'Close', 'Distant'], 'Gill Color': ['White', 'Tan', 'Brown', 'Black', 'Yellow', 'Red', 'Orange'], 'Stem Shape': ['Cylindrical', 'Club', 'Bulbous'], 'Stem Texture': ['Smooth', 'Scaly', 'Hairy', 'Fuzzy', 'Wrinkled'], 'Stem Annulus': ['Superior', 'Median', 'Basal', 'None'], 'Stem Color': ['White', 'Tan', 'Brown', 'Black', 'Yellow', 'Red', 'Orange']}
+    g.features = {'Cap Shape': ['Convex', 'Ovoid', 'Cylindric', 'Conical', 'Cuspidate', 'Campanulate', 'Umbonate', 'Papillate', 'Plane', 'Umbilicate', 'Depressed', 'Infundibuliform'], 'Cap Texture': ['Smooth', 'Uneven', 'Rugose', 'Scrobiculate', 'Virgate', 'Sericeous', 'Fibrilose', 'Squamose', 'Pulverulent', 'Zonate', 'Areolate', 'Glutinous', 'Pubescent', 'Floccose', 'Hispid', 'Villose'], 'Cap Color': ['White', 'Tan', 'Brown', 'Black', 'Yellow', 'Red', 'Orange', 'Purple'], 'Cap Margins': ['Entire', 'Appendiculate', 'Striate', 'Sulcate', 'Pilcate', 'Split', 'Lacerate', 'Hairy', 'Undulating', 'Serrate'], 'Gill Attachment': ['Adnate', 'Adnexed', 'Sinuate', 'Seceding', 'Decurrent', 'Subdecurrent', 'Free', 'Collared'], 'Gill Spacing': ['Crowded', 'Close', 'Distant'], 'Gill Color': ['White', 'Tan', 'Brown', 'Black', 'Yellow', 'Red', 'Orange'], 'Stem Shape': ['Cylindrical', 'Club', 'Bulbous'], 'Stem Texture': ['Smooth', 'Scaley', 'Hairy', 'Fuzzy', 'Wrinkled'], 'Stem Annulus': ['Superior', 'Median', 'Basal', 'None'], 'Stem Color': ['White', 'Tan', 'Brown', 'Black', 'Yellow', 'Red', 'Orange']}
 
 
 def allowed_file(filename):
@@ -133,7 +133,6 @@ def comparison():
         Stem_Color = request.form['Stem Color']
         if request.form.get('permission') == '1':
             cursor = g.user_db.cursor()
-            "INSERT INTO your_table (Image File, Cap Shape, Cap Texture, Cap Color, Cap Margins, Gill Attachment, Gill Spacing, Gill Color, Stem Shape, Stem Texture, Stem Annulus, Stem Color) VALUES ('$Cap Shape', '$Cap Texture', '$Cap Color', '$Cap Margins', '$Gill Attachment', '$Gill Spacing', '$Gill Color', '$Stem Shape', '$Stem Texture', '$Stem Annulus', '$Stem Color')"
             cursor.execute("INSERT INTO user_labels (ImageFile, CapShape, CapTexture, CapColor, CapMargins, GillAttachment, GillSpacing, GillColor, StemShape, StemTexture, StemAnnulus, StemColor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (Image_file, Cap_Shape, Cap_Texture, Cap_Color, Cap_Margins, Gill_Attachment, Gill_Spacing, Gill_Color, Stem_Shape, Stem_Texture, Stem_Annulus, Stem_Color))
             g.user_db.commit()
             cursor.close
@@ -145,9 +144,9 @@ def comparison():
         prediction, conf = g.predictor.predict(os.path.join(app.config['UPLOAD_FOLDER'], Image_file))
         return render_template('comparison.html', labels=labels, filename=Image_file, features=g.features, predictions=prediction, conf=conf, synonyms=newSynonyms)
         
-@app.route('/about')
-def about():
-    return render_template('about.html')
+@app.route('/help')
+def help():
+    return render_template('help.html')
 
 
 if __name__ == '__main__':
