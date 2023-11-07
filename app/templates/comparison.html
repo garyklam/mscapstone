@@ -123,7 +123,7 @@
 <body>
     <div class="container">
         <div class="left-half">
-            <img src="/static/uploads/{{filename}}"  alt="cantfind image" width="244" height="244">
+            <img src="static/uploads/{{filename}}"  alt="cantfind image" width="244" height="244">
 			<ul class="feature-list">
 				{% for name, label in labels.items(): %}
 					<li>
@@ -133,13 +133,14 @@
 					</li>
 				{% endfor %}
 			</ul>
+			<h5>Green indicates an exact match. Yellow indicates a similar match.</h5>
         </div>
         <div class="right-half">
             {% for prediction in predictions %}
             <button type="button" class="outer-collapsible">{{prediction['species']}} ({{conf[prediction['species']]}}%)</button>
                 {% set species = prediction['species'] %}
                 <div class="collapsible-content">
-                    <img src='/static/img/{{ species | replace(' ','_')}}.jpg'  alt="cantfind image" width="244" height="244" class="center">
+                    <img src='static/img/{{ species | replace(' ','_')}}.jpg'  alt="cantfind image" width="244" height="244" class="center">
                     <label class="feature-label">Cap:</label>
                         <h5>{{prediction['Cap']}}</h5>
                     <label class="feature-label">Gills:</label>

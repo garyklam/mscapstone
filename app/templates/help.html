@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+	.collapsible {
+		background-color: #ffffff
+		color: white;
+		cursor: pointer;
+		padding: 18px;
+		width: 100%;
+		border: none;
+		text-align: center;
+		outline: none;
+		font-size: 16px;
+	}
+
+	.collapsible-content {
+	  padding: 0 18px;
+	  display: none;
+	  overflow: hidden;
+	  background-color: #ffffff;
+	}
+
+	.collapsible-content.active {
+	  display: block;
+	}
+		.faq_list {
+		margin-top: 53px;
+		background-color: #ffffff;
+		display: flex;
+		flex-direction: column;
+	}
+</style>
+</head>
+<body>
+<h3>FAQs</h3>
+<div class="faq_list">
+	<button type="button" class="outer-collapsible">Why won't my image upload?</button>
+		<div class="collapsible-content">
+				<h6>Only image files with the following extensions will be accepted: .jpg, .jpeg, .png, and .gif</h6>
+		</div>
+	<button type="button" class="outer-collapsible">How are the prediction results ordered</button>
+	<div class="collapsible-content">
+			<h6>The most likely prediction is placed highest with confidence decreasing with each result. The confidence is listed as a percentage next to the species name of each prediction.</h6>
+	</div>
+	<button type="button" class="outer-collapsible">Why are the confidence scores for my prediction so low?</button>
+	<div class="collapsible-content">
+			<h6>ShroomGuesser only contains the data for 45 species. If your image is not one of these, a low confidence is likely. Additionally, if your image does not capture the identifying features of the species, the prediction model may have a difficult time with identification.</h6>
+	</div>
+		
+	<button type="button" class="outer-collapsible">What do the features mean? Why use overly complicated terms instead of basic ones?</button>
+	<div class="collapsible-content">
+		<h6>The technical terms are used to make similar but different features distinct from each other and to help familiarize the user with such terms. For more info on these terms and helpful diagrams, check out this useful <a href="https://mycologyst.art/identification/mushroom-morphology/">website</a>.<br> For a basic description of certain terms, look below:</h6>
+		<button type="button" class="inner-collapsible">Cap Shapes</button>
+		<div class="collapsible-content">
+			Convex - Bowl-shaped<br>
+			Ovoid - Egg-shaped<br>
+			Cylindric - Tall and convex<br>
+			Conical - Cone-shaped<br>
+			Cuspidate - Witch-hat<br>
+			Campanulate - Bell-shaped<br>
+			Umbonate - Convex with centralized knob<br>
+			Papillate - Convex with small central bump<br>
+			Plane - Flat<br>
+			Umbilicate - Convex with central depression<br>
+			Depressed - Saucer-shaped<br>
+			Infundibuliform - Funnel-shaped
+		</div>
+		<button type="button" class="inner-collapsible">Cap Textures</button>
+		<div class="collapsible-content">
+			Smooth - No defining features<br>
+			Uneven - Bumpy<br>
+			Rugose - Wrinkled or rough<br>
+			Scrobiculate - Pitted or furrowed<br>
+			Virgate - Streaked<br>
+			Sericeous - Silky<br>
+			Fibrilose - Covered in threadlike filaments<br>
+			Squamose - Covered in scales<br>
+			Pulverulent - Covered in dust or powder<br>
+			Zonate - Containing distinguishable zones or bands<br>
+			Areolate - Cracked, resembling dried mud<br>
+			Glutinous - Slimy<br>
+			Pubescent - Covered in fuzz or fine hairs<br>
+			Floccose - Covered in wooly hairs<br>
+			Hispid - Covered in bristle like hairs<br>
+			Villose - Covered in long soft hairs
+		</div>
+		<button type="button" class="inner-collapsible">Cap Margins</button>
+		<div class="collapsible-content">
+			Entire - Smooth<br>
+			Appendiculate - Remains of a veil<br>
+			Striate - Fine and narrow stripes running parallel<br>
+			Sulcate - Parallel grooves<br>
+			Pilcate - Umbrella like<br>
+			Split - Edges are split apart or have large crevices<br>
+			Lacerate - Small and frequent tears<br>
+			Hairy - Containing fibrous hairs<br>
+			Undulating - Edges form wave like pattern<br>
+			Serrate - Jagged or saw-toothed edges
+		</div>
+		<button type="button" class="inner-collapsible">Gill Attachment</button>
+		<div class="collapsible-content">
+			Adnate - Broadly attached to stem<br>
+			Adnexed - Narrowly attached to stem<br>
+			Sinuate - Smoothly notched before running down the stem<br>
+			Seceding - Appearing torn away from the stem<br>
+			Decurrent - Attached and running down the stem<br>
+			Subdecurrent - Attached and slightly extend down the stem<br>
+			Free - Not attached to the stem<br>
+			Collared - Attached to ring that encircles the stem
+		</div>
+		<button type="button" class="inner-collapsible">Stem Annulus</button>
+		<div class="collapsible-content">
+			Superior - Near cap<br>
+			Median - In middle<br>
+			Basal - Near base
+		</div>
+	</div>
+</div>
+
+
+<script>
+    var coll = document.getElementsByClassName('outer-collapsible');
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener('click', function() {
+            var isActive = this.classList.contains('active');
+
+        for (item of coll) {
+            item.classList.remove('active');
+            item.nextElementSibling.style.display = 'none';
+        }
+
+        // If the clicked collapsible is not active, open it
+        if (!isActive) {
+            this.classList.add('active');
+            var content = this.nextElementSibling;
+        content.style.display = 'block';
+        }
+        });
+    }
+
+    var coll2 = document.getElementsByClassName('inner-collapsible');
+    var j;
+
+    for (j = 0; j < coll2.length; j++) {
+        coll2[j].addEventListener('click', function() {
+            this.classList.toggle('active');
+            var content2 = this.nextElementSibling;
+        if (content2.style.display === 'block') {
+            content2.style.display = 'none';
+        } else {
+            content2.style.display = 'block';
+        }
+    });
+}
+</script>
+
+</body>
+</html>
+
+{% endblock %}
