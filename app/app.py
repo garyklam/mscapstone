@@ -19,7 +19,7 @@ class Predictor():
         #     self.specieslist.append(dir)
         #
         # print(self.specieslist)
-        conn = sqlite3.connect('static/Species_info.db')
+        conn = sqlite3.connect('/static/Species_info.db')
         conn.row_factory = sqlite3.Row
         self.cursor = conn.cursor()
         self.specieslist = ['Agaricus_arvensis', 'Agaricus_bernardii', 'Agaricus_bisporus', 'Agaricus_campestris', 'Agaricus_moelleri', 'Agaricus_xanthodermus',
@@ -32,7 +32,7 @@ class Predictor():
                             'Tricholoma_portentosum', 'Tricholoma_sulphureum']
 
 
-        PATH = "static/5_9_species_effnet0_adam_10.pt"
+        PATH = "/static/5_9_species_effnet0_adam_10.pt"
 
         # Replace the final fully connected layer
         # num_features = self.model.fc.in_features
@@ -70,14 +70,14 @@ class Predictor():
 
 app = Flask(__name__)
 
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = '/static/uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png', 'gif'}
 
 
 @app.before_request
 def before_request():
     g.predictor = Predictor()
-    g.user_db = sqlite3.connect('static/Labels.db')
+    g.user_db = sqlite3.connect('/static/Labels.db')
     g.user_db.row_factory = sqlite3.Row
     with open("static/featuresynonyms.txt") as file:
         synonyms = file.read()
