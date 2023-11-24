@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Results{% endblock %}
+{% block title %}ShroomGuesser{% endblock %}
 {% block content %}
 
 <!DOCTYPE html>
@@ -7,21 +7,45 @@
   <head>
     <meta charset="UTF-8">
     <title>TitlePlaceholder</title>
+    <style>
+      .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 10%;
+        padding-bottom: 80px;
+      }
+      .container {
+        display: block;
+        padding-left: 50px;
+      }
+    </style>
   </head>
   <body>
-    <h1>Upload Image</h1>
-    <img id="uploaded-image" src="/static/placeholder.PNG'" alt="default image">
-<!--    <img id="uploaded-image" src="placeholder.PNG" alt="default image">-->
-    <br>
-    <form action="/results" method="post" enctype="multipart/form-data">
-      <input type="file" name="file" id="file-input">
+    <div class="center">
+      <h1>Upload Image</h1>
+      <img id="uploaded-image" src="static/placeholder.PNG'" alt="default image">
+  <!--    <img id="uploaded-image" src="placeholder.PNG" alt="default image">-->
       <br>
-      <input type="submit" value="Identify">
-    </form>
-	<br>
-	<h5>Select an image and upload to get species predictions</h5><br>
-	<h5>Afterwards, input the features from your specimen to better compare it to the predictions</h5>
-
+      <form action="/results" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" id="file-input">
+        <br>
+        <input type="submit" value="Identify">
+      </form>
+    </div>
+    <div class="container">
+	<h5>Press the [Browse...] button to select an image to identify. <br>
+    Afterward, press [Identify] to get species predictions. </h5><br>
+    <img id="Upload_page" src="static/Upload.JPG'" alt="default image"><br>
+	<h5>On the Results page, click any of the species names to reveal additional information.<br>
+    To better validate the predictions, identify different physical features present in your image with the dropdown menus, then press the [Compare] button.<br>
+    For more practice with identifying mushroom features click <a href="about">here.</a> <br>
+    Checking the box under the [Compare] button allows us to save your input as future training data to improve the site and is completely optional. </h5><br>
+    <img id="Results_page" src="static/Results_input.JPG'" alt="default image"><br>
+    <h5>Afterwards, revealing the additional species information will also display different highlights.<br>
+    Green indicates an exact match with one of your chosen features, while yellow stands for a similar match.</h5><br>
+    <img id="Comparision.JPG" src="static/Results_input.JPG'" alt="default image">
+    </div>
 
     <script>
       const fileInput = document.getElementById("file-input");

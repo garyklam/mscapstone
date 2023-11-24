@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}About{% endblock %}
+{% block title %}FAQs{% endblock %}
 {% block content %}
 <!DOCTYPE html>
 <html>
@@ -34,6 +34,11 @@
 		display: flex;
 		flex-direction: column;
 	}
+
+	.column {
+  		column-count: 3;
+	}
+
 </style>
 </head>
 <body>
@@ -49,12 +54,29 @@
 	</div>
 	<button type="button" class="outer-collapsible">Why are the confidence scores for my prediction so low?</button>
 	<div class="collapsible-content">
-			<h6>ShroomGuesser only contains the data for 45 species. If your image is not one of these, a low confidence is likely. Additionally, if your image does not capture the identifying features of the species, the prediction model may have a difficult time with identification.</h6>
+			<h6>ShroomGuesser only contains the data for 45 species. If your image is not one of these, a low confidence is likely.
+				Additionally, if your image does not capture the identifying features of the species, the prediction model may have a difficult time with identification.</h6>
 	</div>
-		
+	<button type="button" class="outer-collapsible">What species can be identified using this site?</button>
+	<div class="collapsible-content">
+			<h6>
+				Agaricus arvensis, Agaricus bernardii,  Agaricus bisporus,  Agaricus campestris,  Agaricus moelleri,  Agaricus xanthodermus,
+                             Amanita ceciliae,  Amanita echinocephala,  Amanita fulva,  Amanita gemmata,  Amanita phalloides,  Amanita porphyria,  Amanita rubescens,
+                             Ampulloclitocybe clavipes,  Chroogomphus rutilus,  Coprinellus micaceus,  Coprinopsis atramentaria,  Coprinus comatus,  Cortinarius caerulescens,
+                             Entoloma rhodopolium,  Entoloma sinuatum,  Galerina marginata,  Hygrocybe punicea,  Hygrophorus chrysodon,  Hypholoma fasciculare,
+                             Hypholoma marginatum,  Lactarius chrysorrheus,  Lactarius deliciosus,  Lactarius fulvissimus,  Lactarius piperatus,  Lactarius subdulcis,
+                             Lentinellus cochleatus,  Lepiota cristata,  Macrolepiota mastoidea,  Macrolepiota procera,  Marasmius oreades,  Mycena pura,
+                             Omphalotus olearius,  Paxillus involutus,  Russula aurea,  Russula emetica,  Russula virescens,  Tricholoma equestre,  Tricholoma pardinum,
+                             Tricholoma portentosum,  and Tricholoma sulphureum
+			</h6>
+	</div>
 	<button type="button" class="outer-collapsible">What do the features mean? Why use overly complicated terms instead of basic ones?</button>
 	<div class="collapsible-content">
-		<h6>The technical terms are used to make similar but different features distinct from each other and to help familiarize the user with such terms. For more info on these terms and helpful diagrams, check out this useful <a href="https://mycologyst.art/identification/mushroom-morphology/">website</a>.<br> For a basic description of certain terms, look below:</h6>
+		<h6>The technical terms are used to make similar but different features distinct from each other and to help familiarize the user with such terms.<br>
+			Here is a diagram displaying a few different gill attachement and cap shape terms <br>
+			<img id="Gill/Cap morphology" src="static/morphology.png'" alt="default image"> <br>
+			For a more detailed description of these terms and more helpful diagrams, check out this useful <a target=”_blank” href="https://mycologyst.art/identification/mushroom-morphology/">website</a>.<br>
+			For a basic description of certain terms, look below:</h6>
 		<button type="button" class="inner-collapsible">Cap Shapes</button>
 		<div class="collapsible-content">
 			Convex - Bowl-shaped<br>
@@ -69,7 +91,7 @@
 			Umbilicate - Convex with central depression<br>
 			Depressed - Saucer-shaped<br>
 			Infundibuliform - Funnel-shaped
-		</div>
+		</div><br>
 		<button type="button" class="inner-collapsible">Cap Textures</button>
 		<div class="collapsible-content">
 			Smooth - No defining features<br>
@@ -88,7 +110,7 @@
 			Floccose - Covered in wooly hairs<br>
 			Hispid - Covered in bristle like hairs<br>
 			Villose - Covered in long soft hairs
-		</div>
+		</div><br>
 		<button type="button" class="inner-collapsible">Cap Margins</button>
 		<div class="collapsible-content">
 			Entire - Smooth<br>
@@ -101,7 +123,7 @@
 			Hairy - Containing fibrous hairs<br>
 			Undulating - Edges form wave like pattern<br>
 			Serrate - Jagged or saw-toothed edges
-		</div>
+		</div><br>
 		<button type="button" class="inner-collapsible">Gill Attachment</button>
 		<div class="collapsible-content">
 			Adnate - Broadly attached to stem<br>
@@ -112,7 +134,7 @@
 			Subdecurrent - Attached and slightly extend down the stem<br>
 			Free - Not attached to the stem<br>
 			Collared - Attached to ring that encircles the stem
-		</div>
+		</div><br>
 		<button type="button" class="inner-collapsible">Stem Annulus</button>
 		<div class="collapsible-content">
 			Superior - Near cap<br>
