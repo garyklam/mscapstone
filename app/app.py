@@ -193,7 +193,7 @@ def answer():
                 if answers[f'{feature}'] == []:
                     temp += ' Unknown'
                 else:
-                    temp += f" {answers[f'{feature}'].replace}."
+                    temp += f" {answers[f'{feature}']} "
                     scores[f'{feature}'] = temp
 
         return render_template('checkpractice.html', filename=Image_file, features=g.features, scores=scores)
