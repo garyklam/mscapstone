@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Practice{% endblock %}
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Feature Comparison</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .top-container {
+            margin-top: 53px;
+            display: flex;
+            align-items: center;
+            bottom-padding: 53px;
+        }
+        .bot-container {
+            margin-top: 53px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            bottom-padding: 53px;
+        }
+
+        .feature-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .feature-list li {
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-label {
+            margin-right: 10px;
+        }
+
+        .dropdown {
+            width: 150px;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="top-container">
+         <h5>
+            Identify as many features as possible from the provided image and enter them into the appropriate section.<br>
+            When uncertain about a feature, particularly if it is difficult to see, err on the side of caution. <br>
+            It is also possible for a feature to resemble multiple descriptions, allowing for multiple correct answers. <br>
+            Once you are satisfied with your answers, press the [Check] button to see your score. <br>
+        </h5><br>
+    </div>
+    <div class="bot-container">
+        <img src="static/practice/{{filename}}"  alt="cantfind image">
+        <ul class="feature-list">
+            <form action="/answers" method="POST">
+                {% for name, options in features.items(): %}
+                    <li>
+                        <div class="feature-item">
+                        <label for="{{name}}" class="feature-label">{{name}}:</label>
+                            <select name="{{name}}" class="dropdown">
+                                <option value="">Select Result</option>
+                                {% for option in options: %}
+                                    <option value={{option}}>{{option}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </li>
+                {% endfor %}
+                <input type="hidden" name="filename" value={{filename}}>
+                <input type="submit" id='submit' value="Check"><br>
+            </form>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
+{% endblock %}

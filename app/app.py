@@ -6,6 +6,7 @@ from PIL import Image
 import sqlite3
 from torchvision import transforms
 from efficientnet_pytorch import EfficientNet
+from random import randint
 
 
 class Predictor():
@@ -79,6 +80,9 @@ def before_request():
     g.predictor = Predictor()
     g.user_db = sqlite3.connect('static/Labels.db')
     g.user_db.row_factory = sqlite3.Row
+    with open("static/Practice_labels.txt") as file:
+        practice_answers = file.read()
+    g.practice_answers = json.loads(practice_answers)
     with open("static/featuresynonyms.txt") as file:
         synonyms = file.read()
     g.synonyms = json.loads(synonyms)
@@ -154,8 +158,45 @@ def about():
 
 @app.route('/practice')
 def practice():
-    return render_template('practice.html')
+    filename = f'{randint(0,15)}.jpg'
+    return render_template('practice.html', filename=filename, features=g.features)
 
+@app.route('/answers', methods=['POST'])
+def answer():
+    if request.method == 'POST':
+        Image_file = request.form['filename']
+        Cap_Shape = request.form['Cap Shape']
+        Cap_Texture = request.form['Cap Texture']
+        Cap_Color = request.form['Cap Color']
+        Cap_Margins = request.form['Cap Margins']
+        Gill_Attachment = request.form['Gill Attachment']
+        Gill_Spacing = request.form['Gill Spacing']
+        Gill_Color = request.form['Gill Color']
+        Stem_Shape = request.form['Stem Shape']
+        Stem_Texture = request.form['Stem Texture']
+        Stem_Annulus = request.form['Stem Annulus']
+        Stem_Color = request.form['Stem Color']
+        labels = {'Cap Shape': Cap_Shape, 'Cap Texture': Cap_Texture, 'Cap Color': Cap_Color, 'Cap Margins': Cap_Margins,
+                  'Gill Attachment': Gill_Attachment, 'Gill Spacing': Gill_Spacing, 'Gill Color': Gill_Color,
+                  'Stem Shape': Stem_Shape, 'Stem Texture': Stem_Texture, 'Stem Annulus': Stem_Annulus,
+                  'Stem Color': Stem_Color}
+        answers = g.practice_answers[Image_file]
+        scores = {}
+        for feature, response in labels.items():
+            if response in answers[f'{feature}']:
+                scores[f'{feature}'] = response
+            else:
+                if response == '':
+                    temp = 'Uknown /'
+                else:
+                    temp = f"{response} / "
+                if answers[f'{feature}'] == []:
+                    temp += ' Unknown'
+                else:
+                    temp += f" {answers[f'{feature}'].replace}."
+                    scores[f'{feature}'] = temp
+
+        return render_template('checkpractice.html', filename=Image_file, features=g.features, scores=scores)
 
 if __name__ == '__main__':
     app.run(debug=True)
