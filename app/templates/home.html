@@ -49,24 +49,33 @@
     </div>
 
     <script>
-      const fileInput = document.getElementById("file-input");
-      const uploadedImage = document.getElementById("uploaded-image");
+    const fileInput = document.getElementById("file-input");
+    const uploadedImage = document.getElementById("uploaded-image");
 
-      fileInput.addEventListener("change", function() {
-        const file = fileInput.files[0];
-        const reader = new FileReader();
+    fileInput.addEventListener("change", function() {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
 
-        reader.onload = function() {
-          uploadedImage.src = reader.result;
+      reader.onload = function() {
+        uploadedImage.src = reader.result;
+
+        // After the image is loaded, get its dimensions
+        const img = new Image();
+        img.src = reader.result;
+
+        img.onload = function() {
+          uploadedImage.width = this.width;
+          uploadedImage.height = this.height;
         };
+      };
 
-        if (file) {
-          reader.readAsDataURL(file);
-        } else {
-          uploadedImage.src = "{{ url_for('static', filename='default-image.jpg') }}";
-        }
-      });
-    </script>
+      if (file) {
+        reader.readAsDataURL(file);
+      } else {
+        uploadedImage.src = "{{ url_for('static', filename='default-image.jpg') }}";
+      }
+    });
+  </script>
   </body>
 </html>
 
