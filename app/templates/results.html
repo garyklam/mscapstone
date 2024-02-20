@@ -120,11 +120,12 @@
             <img src="static/uploads/{{filename}}"  alt="cantfind image" width="224" height="224">
 			<ul class="feature-list">
 				<form action="/comparison" method="POST">
+					<ul>
 					{% for name, options in features.items(): %}
 						<li>
 							<div class="feature-item">
 							<label for="{{name}}" class="feature-label">{{name}}:</label>
-								<select name="{{name}}" class="dropdown">
+								<select id="{{name}}" name="{{name}}" class="dropdown">
 									<option value="">Select Result</option>
 									{% for option in options: %}
 										<option value={{option}}>{{option}}</option>
@@ -133,8 +134,10 @@
 							</div>
 						</li>
 					{% endfor %}
+					</ul>
 					<input type="hidden" name="filename" value={{filename}}>
 					<input type="submit" id='submit' value="Compare"><br>
+					<label for="permission-checkbox">Grant Permission:</label>
 					<input type="checkbox" name="permission" value="1">
 					<label for="permission"> The image and labels may be saved and used to improve the prediction model</label>
 				</form>
