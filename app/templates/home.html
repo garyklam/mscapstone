@@ -24,11 +24,11 @@
   </head>
   <body>
     <div class="center">
-      <img id="uploaded-image" src="static/placeholder.PNG" alt="default image" width="452" height="244">
+      <img id="uploaded-image" src="static/placeholder.PNG" alt="default image">
   <!--    <img id="uploaded-image" src="placeholder.PNG" alt="default image">-->
       <br>
       <form action="/results" method="post" enctype="multipart/form-data">
-        <label for="fileupload">Filename</label> <input type="file" name="file" id="file-input">
+        <input type="file" name="file" id="file-input">
         <br>
         <input type="submit" value="Identify">
       </form>
