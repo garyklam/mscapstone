@@ -90,20 +90,20 @@
         <ul class="feature-list">
             <form action="/answers" method="POST">
                 <ul>
-                {% for name, options in features.items(): %}
-                    <li>
-                        <div class="feature-item">
-                        <label for="{{name}}" class="feature-label">{{name}}:</label>
-                            <select id="{{name}}" name="{{name}}" class="dropdown">
-                                <option value="">Select Result</option>
-                                {% for option in options: %}
-                                    <option value={{option}}>{{option}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </li>
-                {% endfor %}
-                </ul>
+					  {% for name, options in features.items(): %}
+					    <li>
+					      <div class="feature-item">
+					        <label for="{{name}}" class="feature-label">{{name}}:</label>
+					        <select id="{{name}}" name="{{name}}" class="dropdown">
+					          <option value="">Select Result</option>
+					          {% for option in options %}
+					            <option value="{{ option }}">{{ option }}</option>
+					          {% endfor %}
+					        </select>
+					      </div>
+					    </li>
+					  {% endfor %}
+					</ul>
                 <input type="hidden" name="filename" value={{filename}}>
                 <input type="submit" id='submit' value="Check"><br>
             </form>
