@@ -6,6 +6,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <meta name="description" content="Home page for mushroom identification. Upload images to identify.">
     <title>TitlePlaceholder</title>
     <style>
       .center {
@@ -23,7 +24,7 @@
   </head>
   <body>
     <div class="center">
-      <img id="uploaded-image" src="static/placeholder.PNG" alt="default image">
+      <img id="uploaded-image" src="static/placeholder.PNG" alt="default image" width=224 height=224>
   <!--    <img id="uploaded-image" src="placeholder.PNG" alt="default image">-->
       <br>
       <form action="/results" method="post" enctype="multipart/form-data">
@@ -35,15 +36,15 @@
     <div class="container">
 	<h5>Press the [Browse...] button to select an image to identify. <br>
     Afterward, press [Identify] to get species predictions. </h5><br>
-    <img id="Upload_page" src="/static/Upload.JPG" alt="default image"><br><br>
+    <img id="Upload_page" src="/static/Upload.JPG" alt="default image" width=312 height=368><br><br>
 	<h5>On the Results page, click any of the species names to reveal additional information.<br>
     To better validate the predictions, identify different physical features present in your image with the dropdown menus, then press the [Compare] button.<br>
     For more practice with identifying mushroom features click <a href="about">here.</a> <br>
     Checking the box under the [Compare] button allows us to save your input as future training data to improve the site and is completely optional. </h5><br>
-    <img id="Results_page" src="static/Results_input.JPG" alt="default image"><br><br>
+    <img id="Results_page" src="static/Results_input.JPG" alt="default image" width=854 height=510><br><br>
     <h5>Afterwards, revealing the additional species information will also display different highlights.<br>
     Green indicates an exact match with one of your chosen features, while yellow stands for a similar match.</h5><br>
-    <img id="Comparision.JPG" src="static/Comparison.JPG" alt="default image">
+    <img id="Comparision.JPG" src="static/Comparison.JPG" alt="default image width=854 height=510">
     </div>
 
     <script>
