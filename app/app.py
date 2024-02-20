@@ -187,7 +187,7 @@ def answer():
                 scores[f'{feature}'] = response
             else:
                 if response == '':
-                    temp = 'Uknown /'
+                    temp = 'Unknown /'
                 else:
                     temp = f"{response} / "
                 if answers[f'{feature}'] == []:
