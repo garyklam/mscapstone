@@ -39,7 +39,7 @@ class Predictor():
         # num_features = self.model.fc.in_features
         # self.model.fc = nn.Linear(num_features, 46)
 
-        self.model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=46)
+        self.model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=45)
         self.model.load_state_dict(torch.load(PATH))
 
         self.model.eval()
