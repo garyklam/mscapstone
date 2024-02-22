@@ -73,7 +73,7 @@ class Predictor():
             avg_confidence_score = sum(scores) / len(scores)
             all_confidence_scores[species] = avg_confidence_score
 
-        return predictions conf_scores
+        return predictions, conf_scores
 
     def query(self, species):
         self.cursor.execute("SELECT * FROM species_info WHERE Species=?", (species,))
