@@ -64,14 +64,14 @@ class Predictor():
                 
             for i in range(len(predicted)):
                 species = predicted[i]["species"]
-                if species in all_confidence_scores:
-                    all_confidence_scores[species].append(conf[i] // .0001 / 100)
+                if species in conf_scores:
+                    conf_scores[species].append(conf[i] // .0001 / 100)
                 else:
-                    all_confidence_scores[species] = [conf[i] // .0001 / 100]
+                    conf_scores[species] = [conf[i] // .0001 / 100]
             predictions.extend(predicted)
-        for species, scores in all_confidence_scores.items():
-            avg_confidence_score = sum(scores) / len(scores)
-            all_confidence_scores[species] = avg_confidence_score
+        for species, scores in conf_scores.items():
+            avg_conf = sum(scores) / len(scores)
+            conf_scores[species] = avg_conf
 
         return predictions, conf_scores
 
