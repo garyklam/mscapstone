@@ -33,7 +33,7 @@ class Predictor():
                             'Tricholoma_portentosum', 'Tricholoma_sulphureum']
 
 
-        PATH = "static/5_9_species_effnet0_adam_10.pt"
+        PATH = "static/1_27_selectset2_aug_effnet0_nadam_.001lr_13.pt"
 
         # Replace the final fully connected layer
         # num_features = self.model.fc.in_features
@@ -44,24 +44,36 @@ class Predictor():
 
         self.model.eval()
 
-    def predict(self, img_path):
-        process = transforms.ToTensor()
-        image = Image.open(img_path).convert('RGB')
-        tensor = process(image)
-        tensor = torch.unsqueeze(tensor, 0)
-        output = self.model(tensor)
-        probs = torch.nn.functional.softmax(output, dim=1)
-        conf, indx = torch.topk(probs, k=5, dim=1)
-        conf = conf.squeeze().tolist()
-        predicted = []
-        conf_score = {}
-        for x in indx.squeeze().tolist():
-            id = self.specieslist[x].replace('_', ' ')
-            predicted.append(self.query(id))
-        for i in range(len(predicted)):
-            conf_score[f'{predicted[i]["species"]}'] = conf[i] // .0001 / 100
-            # conf_score.append(conf[i] // .0001 / 100) #turn to percent and round value
-        return predicted, conf_score
+    def predict(self, img_paths):
+        predictions = []
+        conf_scores = {}
+        for img_path in img_paths:
+            process = transforms.ToTensor()
+            image = Image.open(img_path).convert('RGB')
+            tensor = process(image)
+            tensor = torch.unsqueeze(tensor, 0)
+            output = self.model(tensor)
+            probs = torch.nn.functional.softmax(output, dim=1)
+            conf, indx = torch.topk(probs, k=5, dim=1)
+            conf = conf.squeeze().tolist()
+            predicted = []
+
+            for x in indx.squeeze().tolist():
+                id = self.specieslist[x].replace('_', ' ')
+                predicted.append(self.query(id))
+                
+            for i in range(len(predicted)):
+                species = predicted[i]["species"]
+                if species in all_confidence_scores:
+                    all_confidence_scores[species].append(conf[i] // .0001 / 100)
+                else:
+                    all_confidence_scores[species] = [conf[i] // .0001 / 100]
+            predictions.extend(predicted)
+        for species, scores in all_confidence_scores.items():
+            avg_confidence_score = sum(scores) / len(scores)
+            all_confidence_scores[species] = avg_confidence_score
+
+        return predictions conf_scores
 
     def query(self, species):
         self.cursor.execute("SELECT * FROM species_info WHERE Species=?", (species,))
@@ -100,22 +112,26 @@ def index():
 
 @app.route('/results', methods=['POST'])
 def results():
-    file = request.files['file']
-    if file and allowed_file(file.filename):
-        filename = file.filename
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        img = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        width, height = img.size
-        scale_factor = 224 / max(width, height)
-
-        # Calculate the new dimensions while maintaining the aspect ratio
-        new_width = int(width * scale_factor)
-        new_height = int(height * scale_factor)
-
-        # Resize the image
-        resized_img = img.resize((new_width, new_height))
-        resized_img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        prediction, conf = g.predictor.predict(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    files = request.files.getlist('file')
+    predictions = []
+    filepaths = []
+    for file in files:
+        if file and allowed_file(file.filename):
+            filename = file.filename
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            img = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            width, height = img.size
+            scale_factor = 224 / max(width, height)
+    
+            # Calculate the new dimensions while maintaining the aspect ratio
+            new_width = int(width * scale_factor)
+            new_height = int(height * scale_factor)
+    
+            # Resize the image
+            resized_img = img.resize((new_width, new_height))
+            resized_img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            filepaths.append(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        prediction, conf = g.predictor.predict(filepaths))
         return render_template('results.html', uploads=app.config['UPLOAD_FOLDER'], filename=filename, features=g.features, predictions=prediction, conf=conf)
     else:
         return "Invalid file format"
