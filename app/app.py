@@ -131,8 +131,8 @@ def results():
             resized_img = img.resize((new_width, new_height))
             resized_img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             filepaths.append(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        prediction, conf = g.predictor.predict(filepaths))
-        return render_template('results.html', uploads=app.config['UPLOAD_FOLDER'], filename=filename, features=g.features, predictions=prediction, conf=conf)
+    prediction, conf = g.predictor.predict(filepaths)
+    return render_template('results.html', uploads=app.config['UPLOAD_FOLDER'], filename=filename, features=g.features, predictions=prediction, conf=conf)
     else:
         return "Invalid file format"
 
