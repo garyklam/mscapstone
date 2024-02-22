@@ -113,7 +113,6 @@ def index():
 @app.route('/results', methods=['POST'])
 def results():
     files = request.files.getlist('file')
-    predictions = []
     filepaths = []
     for file in files:
         if file and allowed_file(file.filename):
@@ -131,10 +130,11 @@ def results():
             resized_img = img.resize((new_width, new_height))
             resized_img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             filepaths.append(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        else:
+            return "Invalid file format"
     prediction, conf = g.predictor.predict(filepaths)
     return render_template('results.html', uploads=app.config['UPLOAD_FOLDER'], filename=filename, features=g.features, predictions=prediction, conf=conf)
-    else:
-        return "Invalid file format"
+
 
 @app.route('/comparison', methods=['POST'])
 def comparison():
