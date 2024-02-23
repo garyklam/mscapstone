@@ -25,27 +25,25 @@ class Predictor():
         self.cursor = conn.cursor()
         self.specieslist = ['Agaricus_arvensis', 'Agaricus_bernardii', 'Agaricus_bisporus', 'Agaricus_campestris', 'Agaricus_moelleri', 'Agaricus_xanthodermus',
                             'Amanita_ceciliae', 'Amanita_echinocephala', 'Amanita_fulva', 'Amanita_gemmata', 'Amanita_phalloides', 'Amanita_porphyria', 'Amanita_rubescens',
-                            'Ampulloclitocybe_clavipes', 'Chroogomphus_rutilus', 'Coprinellus_micaceus', 'Coprinopsis_atramentaria', 'Coprinus_comatus', 'Cortinarius_caerulescens',
+                            'Ampulloclitocybe_clavipes', 'Chroogomphus_rutilus', 'Clitocybe rivulosa', 'Coprinellus_micaceus', 'Coprinopsis_atramentaria', 'Coprinus_comatus', 'Cortinarius_caerulescens',
                             'Entoloma_rhodopolium', 'Entoloma_sinuatum', 'Galerina_marginata', 'Hygrocybe_punicea', 'Hygrophorus_chrysodon', 'Hypholoma_fasciculare',
-                            'Hypholoma_marginatum', 'Lactarius_chrysorrheus', 'Lactarius_deliciosus', 'Lactarius_fulvissimus', 'Lactarius_piperatus', 'Lactarius_subdulcis',
-                            'Lentinellus_cochleatus', 'Lepiota_cristata', 'Macrolepiota_mastoidea', 'Macrolepiota_procera', 'Marasmius_oreades', 'Mycena_pura',
+                            'Hypholoma lateritium', 'Hypholoma_marginatum', 'Inocybe rimosa', 'Lactarius_chrysorrheus', 'Lactarius_deliciosus', 'Lactarius_fulvissimus', 'Lactarius_piperatus', 'Lactarius_subdulcis',
+                            'Lentinellus_cochleatus', 'Lepiota_cristata', 'Lepista (Clitocybe) saeva', 'Macrolepiota_mastoidea', 'Macrolepiota_procera', 'Marasmius_oreades', 'Mycena_pura',
                             'Omphalotus_olearius', 'Paxillus_involutus', 'Russula_aurea', 'Russula_emetica', 'Russula_virescens', 'Tricholoma_equestre', 'Tricholoma_pardinum',
                             'Tricholoma_portentosum', 'Tricholoma_sulphureum']
 
-
-        PATH = "static/1_27_selectset2_aug_effnet0_nadam_.001lr_13.pt"
+        PATH = "static/5_9_species_effnet0_adam_10.pt"
 
         # Replace the final fully connected layer
         # num_features = self.model.fc.in_features
         # self.model.fc = nn.Linear(num_features, 46)
 
-        self.model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=45)
+        self.model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=46)
         self.model.load_state_dict(torch.load(PATH))
 
         self.model.eval()
 
     def predict(self, img_paths):
-        predictions = []
         conf_scores = {}
         for img_path in img_paths:
             process = transforms.ToTensor()
@@ -54,26 +52,26 @@ class Predictor():
             tensor = torch.unsqueeze(tensor, 0)
             output = self.model(tensor)
             probs = torch.nn.functional.softmax(output, dim=1)
-            conf, indx = torch.topk(probs, k=5, dim=1)
-            conf = conf.squeeze().tolist()
-            predicted = []
+            conf = probs.squeeze().tolist()
 
-            for x in indx.squeeze().tolist():
-                id = self.specieslist[x].replace('_', ' ')
-                predicted.append(self.query(id))
-                
-            for i in range(len(predicted)):
-                species = predicted[i]["species"]
-                if species in conf_scores:
-                    conf_scores[species].append(conf[i] // .0001 / 100)
+            for id_num, prob in enumerate(conf):
+                species = self.specieslist[int(id_num)].replace('_', ' ')
+                if species in conf_scores.keys():
+                    conf_scores[f'{species}'].append(prob)
                 else:
-                    conf_scores[species] = [conf[i] // .0001 / 100]
-            predictions.extend(predicted)
-        for species, scores in conf_scores.items():
-            avg_conf = sum(scores) / len(scores)
-            conf_scores[species] = avg_conf
+                    conf_scores[f'{species}'] = [(prob)]
+        print(f'all_confs = {conf_scores}')
+        for species in conf_scores:
+            avg_conf = sum(conf_scores[f'{species}']) / len(conf_scores[f'{species}']) // .0001 / 100
+            conf_scores[f'{species}'] = avg_conf
+        print(f'avg_confs = {conf_scores}')
+        sorted_conf_scores = {k: v for k, v in sorted(conf_scores.items(), key=lambda item: item[1], reverse=True)}
+        top_5_species = list(sorted_conf_scores.keys())[:5]
+        top_species_data = []
+        for x in top_5_species:
+            top_species_data.append(self.query(x))
 
-        return predictions, conf_scores
+        return top_species_data, conf_scores
 
     def query(self, species):
         self.cursor.execute("SELECT * FROM species_info WHERE Species=?", (species,))
