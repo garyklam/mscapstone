@@ -15,8 +15,8 @@ app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png', 'gif'}
 
 @app.before_request
 def before_request():
-    g.predictor = Predictor()
     g.db = DB_Helper()
+    g.predictor = Predictor(g.db)
     with open("static/Practice_labels.txt") as file:
         practice_answers = file.read()
     g.practice_answers = json.loads(practice_answers)
