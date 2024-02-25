@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, g
 import os
 from PIL import Image
 from Predictor import Predictor
+from DB_Helper import DB_Helper
 from random import randint
 import sqlite3
 
@@ -15,8 +16,7 @@ app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png', 'gif'}
 @app.before_request
 def before_request():
     g.predictor = Predictor()
-    g.user_db = sqlite3.connect('static/Labels.db')
-    g.user_db.row_factory = sqlite3.Row
+    g.db = DB_Helper()
     with open("static/Practice_labels.txt") as file:
         practice_answers = file.read()
     g.practice_answers = json.loads(practice_answers)
@@ -63,28 +63,26 @@ def results():
 
 @app.route('/comparison', methods=['POST'])
 def comparison():
+    Features = {}
     if request.method == 'POST':
-        Image_file = request.form['filename']
-        Cap_Shape = request.form['Cap Shape']
-        Cap_Texture = request.form['Cap Texture']
-        Cap_Color = request.form['Cap Color']
-        Cap_Margins = request.form['Cap Margins']
-        Gill_Attachment = request.form['Gill Attachment']
-        Gill_Spacing = request.form['Gill Spacing']
-        Gill_Color = request.form['Gill Color']
-        Stem_Shape = request.form['Stem Shape']
-        Stem_Texture = request.form['Stem Texture']
-        Stem_Annulus = request.form['Stem Annulus']
-        Stem_Color = request.form['Stem Color']
+        Featues['Image_file'] = request.form['filename']
+        Featues['Cap_Shape'] = request.form['Cap Shape']
+        Featues['Cap_Texture'] = request.form['Cap Texture']
+        Featues['Cap_Color'] = request.form['Cap Color']
+        Featues['Cap_Margins'] = request.form['Cap Margins']
+        Featues['Gill_Attachment'] = request.form['Gill Attachment']
+        Featues['Gill_Spacing'] = request.form['Gill Spacing']
+        Featues['Gill_Color'] = request.form['Gill Color']
+        Featues['Stem_Shape'] = request.form['Stem Shape']
+        Featues['Stem_Texture'] = request.form['Stem Texture']
+        Featues['Stem_Annulus'] = request.form['Stem Annulus']
+        Featues['Stem_Color'] = request.form['Stem Color']
         if request.form.get('permission') == '1':
-            cursor = g.user_db.cursor()
-            cursor.execute("INSERT INTO user_labels (ImageFile, CapShape, CapTexture, CapColor, CapMargins, GillAttachment, GillSpacing, GillColor, StemShape, StemTexture, StemAnnulus, StemColor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (Image_file, Cap_Shape, Cap_Texture, Cap_Color, Cap_Margins, Gill_Attachment, Gill_Spacing, Gill_Color, Stem_Shape, Stem_Texture, Stem_Annulus, Stem_Color))
-            g.user_db.commit()
-            cursor.close
-        labels = {'Cap Shape':Cap_Shape, 'Cap Texture':Cap_Texture, 'Cap Color':Cap_Color, 'Cap Margins':Cap_Margins, 'Gill Attachment':Gill_Attachment, 'Gill Spacing':Gill_Spacing, 'Gill Color':Gill_Color, 'Stem Shape':Stem_Shape, 'Stem Texture':Stem_Texture, 'Stem Annulus':Stem_Annulus, 'Stem Color':Stem_Color}
+            g.db.save_entry(Features)
+        # labels = {'Cap Shape':Cap_Shape, 'Cap Texture':Cap_Texture, 'Cap Color':Cap_Color, 'Cap Margins':Cap_Margins, 'Gill Attachment':Gill_Attachment, 'Gill Spacing':Gill_Spacing, 'Gill Color':Gill_Color, 'Stem Shape':Stem_Shape, 'Stem Texture':Stem_Texture, 'Stem Annulus':Stem_Annulus, 'Stem Color':Stem_Color}
         newSynonyms = {}
-        for key, value in labels.items():
-            if value:
+        for key, value in Features.items():
+            if key != 'Image_file' and value:
                 newSynonyms[value] = g.synonyms[value]
         prediction, conf = g.predictor.predict(os.path.join(app.config['UPLOAD_FOLDER'], Image_file))
         return render_template('comparison.html', labels=labels, filename=Image_file, features=g.features, predictions=prediction, conf=conf, synonyms=newSynonyms)
@@ -105,22 +103,23 @@ def practice():
 @app.route('/answers', methods=['POST'])
 def answer():
     if request.method == 'POST':
+        labels = {}
         Image_file = request.form['filename']
-        Cap_Shape = request.form['Cap Shape']
-        Cap_Texture = request.form['Cap Texture']
-        Cap_Color = request.form['Cap Color']
-        Cap_Margins = request.form['Cap Margins']
-        Gill_Attachment = request.form['Gill Attachment']
-        Gill_Spacing = request.form['Gill Spacing']
-        Gill_Color = request.form['Gill Color']
-        Stem_Shape = request.form['Stem Shape']
-        Stem_Texture = request.form['Stem Texture']
-        Stem_Annulus = request.form['Stem Annulus']
-        Stem_Color = request.form['Stem Color']
-        labels = {'Cap Shape': Cap_Shape, 'Cap Texture': Cap_Texture, 'Cap Color': Cap_Color, 'Cap Margins': Cap_Margins,
-                  'Gill Attachment': Gill_Attachment, 'Gill Spacing': Gill_Spacing, 'Gill Color': Gill_Color,
-                  'Stem Shape': Stem_Shape, 'Stem Texture': Stem_Texture, 'Stem Annulus': Stem_Annulus,
-                  'Stem Color': Stem_Color}
+        labels['Cap_Shape'] = request.form['Cap Shape']
+        labels['Cap_Texture'] = request.form['Cap Texture']
+        labels['Cap_Color'] = request.form['Cap Color']
+        labels['Cap_Margins'] = request.form['Cap Margins']
+        labels['Gill_Attachment'] = request.form['Gill Attachment']
+        labels['Gill_Spacing'] = request.form['Gill Spacing']
+        labels['Gill_Color'] = request.form['Gill Color']
+        labels['Stem_Shape'] = request.form['Stem Shape']
+        labels['Stem_Texture'] = request.form['Stem Texture']
+        labels['Stem_Annulus'] = request.form['Stem Annulus']
+        labels['Stem_Color'] = request.form['Stem Color']
+        #labels = {'Cap Shape': Cap_Shape, 'Cap Texture': Cap_Texture, 'Cap Color': Cap_Color, 'Cap Margins': Cap_Margins,
+        #          'Gill Attachment': Gill_Attachment, 'Gill Spacing': Gill_Spacing, 'Gill Color': Gill_Color,
+        #         'Stem Shape': Stem_Shape, 'Stem Texture': Stem_Texture, 'Stem Annulus': Stem_Annulus,
+        #         'Stem Color': Stem_Color}
         answers = g.practice_answers[Image_file]
         scores = {}
         for feature, response in labels.items():
