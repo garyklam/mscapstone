@@ -1,12 +1,11 @@
-import sqlite3
 from efficientnet_pytorch import EfficientNet
 from PIL import Image
 import torch
-import torchvision.transforms as transforms
+
 
 
 class Predictor:
-    def __init__(self, db):
+    def __init__(self, db, img_processor):
         # # used to rebuild specieslist if changes occur
         # destination = 'C:\\Users\\garyk\\Downloads\\Capstone\\selectset2_test'
         # self.specieslist = []
@@ -17,6 +16,7 @@ class Predictor:
         #
         # print(self.specieslist)
         self.db = db
+        self.img_procesor = img_processor
         self.specieslist = ['Agaricus_arvensis', 'Agaricus_bernardii', 'Agaricus_bisporus', 'Agaricus_campestris', 'Agaricus_moelleri', 'Agaricus_xanthodermus',
                             'Amanita_ceciliae', 'Amanita_echinocephala', 'Amanita_fulva', 'Amanita_gemmata', 'Amanita_phalloides', 'Amanita_porphyria', 'Amanita_rubescens',
                             'Ampulloclitocybe_clavipes', 'Chroogomphus_rutilus', 'Clitocybe rivulosa', 'Coprinellus_micaceus', 'Coprinopsis_atramentaria', 'Coprinus_comatus', 'Cortinarius_caerulescens',
@@ -36,10 +36,7 @@ class Predictor:
     def predict(self, img_paths):
         conf_scores = {}
         for img_path in img_paths:
-            process = transforms.ToTensor()
-            image = Image.open(img_path).convert('RGB')
-            tensor = process(image)
-            tensor = torch.unsqueeze(tensor, 0)
+            tensor = g.img_processor.totensor(img_path)
             output = self.model(tensor)
             probs = torch.nn.functional.softmax(output, dim=1)
             conf = probs.squeeze().tolist()
