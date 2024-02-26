@@ -13,12 +13,12 @@ class DB_Helper:
         cursor.close()
         return data
 
-    def save_entry(self, features):
+    def save_entry(self, filename, features):
         cursor = self.user_conn.cursor()
         cursor.execute("INSERT INTO user_labels (ImageFile, CapShape, CapTexture, CapColor, CapMargins, GillAttachment, "
                        "GillSpacing, GillColor, StemShape, StemTexture, StemAnnulus, StemColor) "
                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                       (features['Image_file'], features['Cap_Shape'], features['Cap_Texture'],
+                       (filename, features['Cap_Shape'], features['Cap_Texture'],
                         features['Cap_Color'], features['Cap_Margins'], features['Gill_Attachment'],
                         features['Gill_Spacing'], features['Gill_Color'], features['Stem_Shape'],
                         features['Stem_Texture'], features['Stem_Annulus'], features['Stem_Color']))

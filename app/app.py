@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, g
+from flask import Flask, render_template, request, g, session
 import os
 import json
 from Predictor import Predictor
@@ -8,6 +8,7 @@ from random import randint
 
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
 
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png', 'gif'}
@@ -17,7 +18,7 @@ app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png', 'gif'}
 def before_request():
     g.db = DB_Helper()
     g.img_processor = Image_Preprocessor()
-    g.predictor = Predictor(g.db, g.img_processor)
+    g.predictor = Predictor(g.img_processor)
     with open("static/Practice_labels.txt") as file:
         practice_answers = file.read()
     g.practice_answers = json.loads(practice_answers)
@@ -48,17 +49,27 @@ def results():
             filepaths.append(filepath)
         else:
             return "Invalid file format"
-    print(f'Results__________________{filepaths}')
-    prediction, conf = g.predictor.predict(filepaths)
+    print(f'____________________________Results: {filepaths}')
+    top5, conf = g.predictor.predict(filepaths)
+    session['top5'] = top5
+    session['conf'] = conf
+    top_species_data = []
+    for x in top5:
+        top_species_data.append(g.db.query(x))
     #might have to change filename=filepaths[0] to include all images
     return render_template('results.html', uploads=app.config['UPLOAD_FOLDER'], filename=filepaths[0],
-                           features=g.features, predictions=prediction, conf=conf)
+                           features=g.features, predictions=top_species_data, conf=conf)
 
 
 @app.route('/comparison', methods=['POST'])
 def comparison():
     Features = {}
     if request.method == 'POST':
+        top5 = session.get('top5', None)
+        top_species_data = []
+        for x in top5:
+            top_species_data.append(g.db.query(x))
+        conf = session.get('conf', None)
         Image_file = request.form['filename']
         Features['Cap_Shape'] = request.form['Cap Shape']
         Features['Cap_Texture'] = request.form['Cap Texture']
@@ -72,17 +83,13 @@ def comparison():
         Features['Stem_Annulus'] = request.form['Stem Annulus']
         Features['Stem_Color'] = request.form['Stem Color']
         if request.form.get('permission') == '1':
-            g.db.save_entry(Features)
+            g.db.save_entry(Image_file, Features)
         newSynonyms = {}
         for key, value in Features.items():
             if value:
                 newSynonyms[value] = g.synonyms[value]
-        print("______________________________________________")
-        print(f'Comparision__________________{Image_file}')
-
-        prediction, conf = g.predictor.predict(os.path.join(app.config['UPLOAD_FOLDER'], Image_file))
         return render_template('comparison.html', labels=Features, filename=Image_file, features=g.features,
-                               predictions=prediction, conf=conf, synonyms=newSynonyms)
+                               predictions=top_species_data, conf=conf, synonyms=newSynonyms)
 
 
 @app.route('/help')

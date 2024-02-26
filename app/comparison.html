@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% block title %}Results{% endblock %}
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Feature Comparison</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            align-items: flex-start;
+        }
+
+        .left-half,
+        .right-half {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .left-half {
+            margin-top: 53px;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .right-half {
+            margin-top: 53px;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .feature-list li {
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-label {
+            margin-right: 10px;
+        }
+
+        .dropdown {
+            width: 150px;
+        }
+
+        .active {
+            display: block;
+        }
+
+        [type="checkbox"]
+        {
+            vertical-align:middle;
+        }
+
+        .collapsible {
+            background-color: #ffffff
+            color: white;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: center;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .collapsible-content {
+          padding: 0 18px;
+          display: none;
+          overflow: hidden;
+          background-color: #ffffff;
+        }
+
+        .collapsible-content.active {
+          display: block;
+        }
+
+        .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+        }
+		
+		.exact-highlight {
+		background-color: green;
+		font-weight: italics;
+		}
+
+		.synonym-highlight {
+		background-color: yellow; 
+		font-style: italics;
+		}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-half">
+            <img src="{{filename}}"  alt="cantfind image" width="244" height="244">
+			<ul class="feature-list">
+				{% for name, label in labels.items(): %}
+					<li>
+						<div class="feature-item">
+						<label for="{{name}}" class="feature-label">{{name}}: {{label}}</label>
+						</div>
+					</li>
+				{% endfor %}
+			</ul>
+			<h5>Green indicates an exact match. Yellow indicates a similar match.</h5>
+        </div>
+        <div class="right-half">
+            {% for prediction in predictions %}
+            <button type="button" class="outer-collapsible">{{prediction['species']}} ({{conf[prediction['species']]}}%)</button>
+                {% set species = prediction['species'] %}
+                <div class="collapsible-content">
+                    <img src='static/img/{{ species | replace(' ','_')}}.jpg'  alt="cantfind image" width="244" height="244" class="center">
+                    <label class="feature-label">Cap:</label>
+                        <h5>{{prediction['Cap']}}</h5>
+                    <label class="feature-label">Gills:</label>
+                        <h5>{{prediction['Gills']}}</h5>
+                    <label class="feature-label">Stem:</label>
+                        <h5>{{prediction['Stem']}}</h5>
+                    <button type="button" class="inner-collapsible">Extra Info</button>
+                    <div class="collapsible-content">
+                        <label class="feature-label">Spores:</label>
+                            <h6>{{prediction['Spores']}}</h6>
+                        <label class="feature-label">SporePrint:</label>
+                            <h6>{{prediction['SporePrint']}}</h6>
+                        <label class="feature-label">OdorTaste:</label>
+                            <h6>{{prediction['OdorTaste']}}</h6>
+                        <label class="feature-label">Habitat:</label>
+                            <h6>{{prediction['Habitat']}}</h6>
+                        <label class="feature-label">Season:</label>
+                            <h6>{{prediction['Season']}}</h6>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+<script>
+	function highlight() {
+		var synonymlist = {{ synonyms | safe }};
+		const containers = document.querySelectorAll('h5');
+		
+		containers.forEach(container => {
+			let text = container.textContent;
+			for (const term in synonymlist) {
+				const termsToHighlight = [term, ...synonymlist[term]];
+				termsToHighlight.forEach((highlightTerm) => {
+					const regex = new RegExp(`\\b(${highlightTerm})\\b`, "gi");
+					text = text.replace(regex, match => {
+						return `<span class="${term === highlightTerm ? 'exact-highlight' : 'synonym-highlight'}">${match}</span>`;
+                });
+            });
+        }
+        container.innerHTML = text; // Set the modified text as the innerHTML
+    });
+}
+    var coll = document.getElementsByClassName('outer-collapsible');
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener('click', function() {
+            var isActive = this.classList.contains('active');
+
+        for (item of coll) {
+            item.classList.remove('active');
+            item.nextElementSibling.style.display = 'none';
+        }
+
+        // If the clicked collapsible is not active, open it
+        if (!isActive) {
+            this.classList.add('active');
+            var content = this.nextElementSibling;
+        content.style.display = 'block';
+        }
+        });
+    }
+
+    var coll2 = document.getElementsByClassName('inner-collapsible');
+    var j;
+
+    for (j = 0; j < coll2.length; j++) {
+        coll2[j].addEventListener('click', function() {
+            this.classList.toggle('active');
+            var content2 = this.nextElementSibling;
+        if (content2.style.display === 'block') {
+            content2.style.display = 'none';
+        } else {
+            content2.style.display = 'block';
+        }
+    });
+}
+	window.onload = highlight();
+
+</script>
+
+</body>
+</html>
+{% endblock %}
