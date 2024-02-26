@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, g
 import os
+import json
 from Predictor import Predictor
 from DB_Helper import DB_Helper
 from Image_Preprocessor import Image_Preprocessor
@@ -47,48 +48,58 @@ def results():
             filepaths.append(filepath)
         else:
             return "Invalid file format"
+    print(f'Results__________________{filepaths}')
     prediction, conf = g.predictor.predict(filepaths)
-    return render_template('results.html', uploads=app.config['UPLOAD_FOLDER'], filename=filename, features=g.features, predictions=prediction, conf=conf)
+    #might have to change filename=filepaths[0] to include all images
+    return render_template('results.html', uploads=app.config['UPLOAD_FOLDER'], filename=filepaths[0],
+                           features=g.features, predictions=prediction, conf=conf)
 
 
 @app.route('/comparison', methods=['POST'])
 def comparison():
     Features = {}
     if request.method == 'POST':
-        Featues['Image_file'] = request.form['filename']
-        Featues['Cap_Shape'] = request.form['Cap Shape']
-        Featues['Cap_Texture'] = request.form['Cap Texture']
-        Featues['Cap_Color'] = request.form['Cap Color']
-        Featues['Cap_Margins'] = request.form['Cap Margins']
-        Featues['Gill_Attachment'] = request.form['Gill Attachment']
-        Featues['Gill_Spacing'] = request.form['Gill Spacing']
-        Featues['Gill_Color'] = request.form['Gill Color']
-        Featues['Stem_Shape'] = request.form['Stem Shape']
-        Featues['Stem_Texture'] = request.form['Stem Texture']
-        Featues['Stem_Annulus'] = request.form['Stem Annulus']
-        Featues['Stem_Color'] = request.form['Stem Color']
+        Image_file = request.form['filename']
+        Features['Cap_Shape'] = request.form['Cap Shape']
+        Features['Cap_Texture'] = request.form['Cap Texture']
+        Features['Cap_Color'] = request.form['Cap Color']
+        Features['Cap_Margins'] = request.form['Cap Margins']
+        Features['Gill_Attachment'] = request.form['Gill Attachment']
+        Features['Gill_Spacing'] = request.form['Gill Spacing']
+        Features['Gill_Color'] = request.form['Gill Color']
+        Features['Stem_Shape'] = request.form['Stem Shape']
+        Features['Stem_Texture'] = request.form['Stem Texture']
+        Features['Stem_Annulus'] = request.form['Stem Annulus']
+        Features['Stem_Color'] = request.form['Stem Color']
         if request.form.get('permission') == '1':
             g.db.save_entry(Features)
-        # labels = {'Cap Shape':Cap_Shape, 'Cap Texture':Cap_Texture, 'Cap Color':Cap_Color, 'Cap Margins':Cap_Margins, 'Gill Attachment':Gill_Attachment, 'Gill Spacing':Gill_Spacing, 'Gill Color':Gill_Color, 'Stem Shape':Stem_Shape, 'Stem Texture':Stem_Texture, 'Stem Annulus':Stem_Annulus, 'Stem Color':Stem_Color}
         newSynonyms = {}
         for key, value in Features.items():
-            if key != 'Image_file' and value:
+            if value:
                 newSynonyms[value] = g.synonyms[value]
+        print("______________________________________________")
+        print(f'Comparision__________________{Image_file}')
+
         prediction, conf = g.predictor.predict(os.path.join(app.config['UPLOAD_FOLDER'], Image_file))
-        return render_template('comparison.html', labels=labels, filename=Image_file, features=g.features, predictions=prediction, conf=conf, synonyms=newSynonyms)
-        
+        return render_template('comparison.html', labels=Features, filename=Image_file, features=g.features,
+                               predictions=prediction, conf=conf, synonyms=newSynonyms)
+
+
 @app.route('/help')
 def help():
     return render_template('help.html')
+
 
 @app.route('/about')
 def about():
     return render_template('about.html')
 
+
 @app.route('/practice')
 def practice():
     filename = f'{randint(0,15)}.jpg'
     return render_template('practice.html', filename=filename, features=g.features)
+
 
 @app.route('/answers', methods=['POST'])
 def answer():
@@ -127,6 +138,7 @@ def answer():
                     scores[f'{feature}'] = temp
 
         return render_template('checkpractice.html', filename=Image_file, features=g.features, scores=scores)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,7 +1,5 @@
 from efficientnet_pytorch import EfficientNet
-from PIL import Image
 import torch
-
 
 
 class Predictor:
@@ -16,7 +14,7 @@ class Predictor:
         #
         # print(self.specieslist)
         self.db = db
-        self.img_procesor = img_processor
+        self.img_processor = img_processor
         self.specieslist = ['Agaricus_arvensis', 'Agaricus_bernardii', 'Agaricus_bisporus', 'Agaricus_campestris', 'Agaricus_moelleri', 'Agaricus_xanthodermus',
                             'Amanita_ceciliae', 'Amanita_echinocephala', 'Amanita_fulva', 'Amanita_gemmata', 'Amanita_phalloides', 'Amanita_porphyria', 'Amanita_rubescens',
                             'Ampulloclitocybe_clavipes', 'Chroogomphus_rutilus', 'Clitocybe rivulosa', 'Coprinellus_micaceus', 'Coprinopsis_atramentaria', 'Coprinus_comatus', 'Cortinarius_caerulescens',
@@ -36,7 +34,7 @@ class Predictor:
     def predict(self, img_paths):
         conf_scores = {}
         for img_path in img_paths:
-            tensor = g.img_processor.totensor(img_path)
+            tensor = self.img_processor.to_tensor(img_path)
             output = self.model(tensor)
             probs = torch.nn.functional.softmax(output, dim=1)
             conf = probs.squeeze().tolist()
