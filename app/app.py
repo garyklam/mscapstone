@@ -113,17 +113,17 @@ def answer():
     if request.method == 'POST':
         labels = {}
         Image_file = request.form['filename']
-        labels['Cap_Shape'] = request.form['Cap Shape']
-        labels['Cap_Texture'] = request.form['Cap Texture']
-        labels['Cap_Color'] = request.form['Cap Color']
-        labels['Cap_Margins'] = request.form['Cap Margins']
-        labels['Gill_Attachment'] = request.form['Gill Attachment']
-        labels['Gill_Spacing'] = request.form['Gill Spacing']
-        labels['Gill_Color'] = request.form['Gill Color']
-        labels['Stem_Shape'] = request.form['Stem Shape']
-        labels['Stem_Texture'] = request.form['Stem Texture']
-        labels['Stem_Annulus'] = request.form['Stem Annulus']
-        labels['Stem_Color'] = request.form['Stem Color']
+        labels['Cap Shape'] = request.form['Cap Shape']
+        labels['Cap Texture'] = request.form['Cap Texture']
+        labels['Cap Color'] = request.form['Cap Color']
+        labels['Cap Margins'] = request.form['Cap Margins']
+        labels['Gill Attachment'] = request.form['Gill Attachment']
+        labels['Gill Spacing'] = request.form['Gill Spacing']
+        labels['Gill Color'] = request.form['Gill Color']
+        labels['Stem Shape'] = request.form['Stem Shape']
+        labels['Stem Texture'] = request.form['Stem Texture']
+        labels['Stem Annulus'] = request.form['Stem Annulus']
+        labels['Stem Color'] = request.form['Stem Color']
         #labels = {'Cap Shape': Cap_Shape, 'Cap Texture': Cap_Texture, 'Cap Color': Cap_Color, 'Cap Margins': Cap_Margins,
         #          'Gill Attachment': Gill_Attachment, 'Gill Spacing': Gill_Spacing, 'Gill Color': Gill_Color,
         #         'Stem Shape': Stem_Shape, 'Stem Texture': Stem_Texture, 'Stem Annulus': Stem_Annulus,
