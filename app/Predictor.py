@@ -6,7 +6,7 @@ import torchvision.transforms as transforms
 
 
 class Predictor:
-    def __init__(self):
+    def __init__(self, db):
         # # used to rebuild specieslist if changes occur
         # destination = 'C:\\Users\\garyk\\Downloads\\Capstone\\selectset2_test'
         # self.specieslist = []
@@ -16,9 +16,7 @@ class Predictor:
         #     self.specieslist.append(dir)
         #
         # print(self.specieslist)
-        conn = sqlite3.connect('static/Species_info.db')
-        conn.row_factory = sqlite3.Row
-        self.cursor = conn.cursor()
+        self.db = db
         self.specieslist = ['Agaricus_arvensis', 'Agaricus_bernardii', 'Agaricus_bisporus', 'Agaricus_campestris', 'Agaricus_moelleri', 'Agaricus_xanthodermus',
                             'Amanita_ceciliae', 'Amanita_echinocephala', 'Amanita_fulva', 'Amanita_gemmata', 'Amanita_phalloides', 'Amanita_porphyria', 'Amanita_rubescens',
                             'Ampulloclitocybe_clavipes', 'Chroogomphus_rutilus', 'Clitocybe rivulosa', 'Coprinellus_micaceus', 'Coprinopsis_atramentaria', 'Coprinus_comatus', 'Cortinarius_caerulescens',
@@ -59,11 +57,6 @@ class Predictor:
         top_5_species = list(sorted_conf_scores.keys())[:5]
         top_species_data = []
         for x in top_5_species:
-            top_species_data.append(self.query(x))
+            top_species_data.append(self.db.query(x))
 
         return top_species_data, conf_scores
-
-    def query(self, species):
-        self.cursor.execute("SELECT * FROM species_info WHERE Species=?", (species,))
-        data = self.cursor.fetchone()
-        return data
