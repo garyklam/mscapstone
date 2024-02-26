@@ -1,10 +1,9 @@
 from flask import Flask, render_template, request, g
 import os
-from PIL import Image
 from Predictor import Predictor
 from DB_Helper import DB_Helper
+from Image_Preprocessor import Image_Preprocessor
 from random import randint
-import sqlite3
 
 
 app = Flask(__name__)
@@ -16,7 +15,8 @@ app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png', 'gif'}
 @app.before_request
 def before_request():
     g.db = DB_Helper()
-    g.predictor = Predictor(g.db)
+    g.img_processor = Image_Preprocessor()
+    g.predictor = Predictor(g.db, g.img_processor)
     with open("static/Practice_labels.txt") as file:
         practice_answers = file.read()
     g.practice_answers = json.loads(practice_answers)
@@ -41,20 +41,10 @@ def results():
     filepaths = []
     for file in files:
         if file and allowed_file(file.filename):
-            filename = file.filename
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            img = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            width, height = img.size
-            scale_factor = 224 / max(width, height)
-    
-            # Calculate the new dimensions while maintaining the aspect ratio
-            new_width = int(width * scale_factor)
-            new_height = int(height * scale_factor)
-    
-            # Resize the image
-            resized_img = img.resize((new_width, new_height))
-            resized_img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            filepaths.append(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            g.img_processor.resize(file, filepath)
+            # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            filepaths.append(filepath)
         else:
             return "Invalid file format"
     prediction, conf = g.predictor.predict(filepaths)
