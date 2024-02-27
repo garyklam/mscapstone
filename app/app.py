@@ -99,7 +99,8 @@ def help():
 
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    db_entries = g.db.all_user_input()
+    return render_template('about.html', db_entries=db_entries)
 
 
 @app.route('/practice')
