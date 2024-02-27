@@ -24,3 +24,11 @@ class DB_Helper:
                         features['Stem_Texture'], features['Stem_Annulus'], features['Stem_Color']))
         self.user_conn.commit()
         cursor.close()
+
+   def all_user_input(self):
+        cursor = self.user_conn.cursor()
+        cursor.execute("SELECT * FROM user_labels")
+        entries = cursor.fetchall()
+
+        cursor.close()
+        return entries
