@@ -6,75 +6,146 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  margin: 0;
-}
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+    }
 
-html {
-  box-sizing: border-box;
-}
+    html {
+      box-sizing: border-box;
+    }
 
-*, *:before, *:after {
-  box-sizing: inherit;
-}
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
 
-.column {
-  float: left;
-  width: 33.3%;
-  margin-bottom: 16px;
-  padding: 0 8px;
-}
+    .column {
+      float: left;
+      width: 33.3%;
+      margin-bottom: 16px;
+      padding: 0 8px;
+    }
 
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  margin: 8px;
-}
+    .card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      margin: 8px;
+    }
 
-.about-section {
-  padding: 50px;
-  text-align: center;
-  background-color: #474e5d;
-  color: white;
-}
+    .collapsible {
+          background-color: #ffffff
+          color: white;
+          cursor: pointer;
+          padding: 18px;
+          width: 100%;
+          border: none;
+          text-align: center;
+          outline: none;
+          font-size: 16px;
+    }
 
-.container {
-  padding: 0 16px;
-}
+    .collapsible-content {
+        padding: 0 18px;
+        display: none;
+        overflow: hidden;
+        background-color: #ffffff;
+    }
 
-.container::after, .row::after {
-  content: "";
-  clear: both;
-  display: table;
-}
+    .collapsible-content.active {
+        display: block;
+    }
 
-@media screen and (max-width: 650px) {
-  .column {
-    width: 100%;
-    display: block;
-  }
-}
+    .about-section {
+      padding: 50px;
+      text-align: center;
+      background-color: #474e5d;
+      color: white;
+    }
+
+    .container {
+      padding: 0 16px;
+    }
+
+    .container::after, .row::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+
+    @media screen and (max-width: 650px) {
+          .column {
+            width: 100%;
+            display: block;
+          }
+    }
 </style>
 </head>
 <body>
 
 <div class="about-section">
-  <h1>About Us</h1>
-  <p><b>TCSS 595</b></p>
-  <p>Placeholder</p>
+  <h1>About</h1>
+  <p><b>A Capstone Project for CSS 595</b></p>
+    <p><b>For the fulfilment of the requirements of the degree of</b></p>
+    <p><b>Master of Science in Computer Science & Software Engineering</b></p>
+
 </div>
 
-<h2 style="text-align:center">Our Team</h2>
+<h2 style="text-align:center"></h2>
 <div class="row">
   <div class="column">
     <div class="card">
       <div class="container">
         <h2>Gary Lam</h2>
         <p>lam583@uw.edu</p>
+          <p>University of Washington</p>
       </div>
     </div>
   </div>
 </div>
+
+<button type="button" class="outer-collapsible"></button>
+<div class="collapsible-content">
+    {% for entry in db_entries %}
+        <h6>{{entry}}</h6>
+    {% endfor %}
+</div>
+
+<script>
+    var coll = document.getElementsByClassName('outer-collapsible');
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener('click', function() {
+            var isActive = this.classList.contains('active');
+
+        for (item of coll) {
+            item.classList.remove('active');
+            item.nextElementSibling.style.display = 'none';
+        }
+
+        // If the clicked collapsible is not active, open it
+        if (!isActive) {
+            this.classList.add('active');
+            var content = this.nextElementSibling;
+        content.style.display = 'block';
+        }
+        });
+    }
+
+    var coll2 = document.getElementsByClassName('inner-collapsible');
+    var j;
+
+    for (j = 0; j < coll2.length; j++) {
+        coll2[j].addEventListener('click', function() {
+            this.classList.toggle('active');
+            var content2 = this.nextElementSibling;
+        if (content2.style.display === 'block') {
+            content2.style.display = 'none';
+        } else {
+            content2.style.display = 'block';
+        }
+    });
+}
+</script>
 
 </body>
 </html>
