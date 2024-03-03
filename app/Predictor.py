@@ -16,7 +16,7 @@ class Predictor:
         self.img_processor = img_processor
         self.specieslist = ['Agaricus_arvensis', 'Agaricus_bernardii', 'Agaricus_bisporus', 'Agaricus_campestris', 'Agaricus_moelleri', 'Agaricus_xanthodermus', 'Amanita_ceciliae', 'Amanita_echinocephala', 'Amanita_fulva', 'Amanita_gemmata', 'Amanita_phalloides', 'Amanita_porphyria', 'Amanita_rubescens', 'Ampulloclitocybe_clavipes', 'Chroogomphus_rutilus', 'Coprinellus_micaceus', 'Coprinopsis_atramentaria', 'Coprinus_comatus', 'Cortinarius_caerulescens', 'Entoloma_rhodopolium', 'Entoloma_sinuatum', 'Galerina_marginata', 'Hygrocybe_punicea', 'Hygrophorus_chrysodon', 'Hypholoma_fasciculare', 'Hypholoma_marginatum', 'Lactarius_chrysorrheus', 'Lactarius_deliciosus', 'Lactarius_fulvissimus', 'Lactarius_piperatus', 'Lactarius_subdulcis', 'Lentinellus_cochleatus', 'Lepiota_cristata', 'Macrolepiota_mastoidea', 'Macrolepiota_procera', 'Marasmius_oreades', 'Mycena_pura', 'Omphalotus_olearius', 'Paxillus_involutus', 'Russula_aurea', 'Russula_emetica', 'Russula_virescens', 'Tricholoma_equestre', 'Tricholoma_pardinum', 'Tricholoma_portentosum', 'Tricholoma_sulphureum']
 
-        PATH = "static/5_9_species_effnet0_adam_10.pt"
+        PATH = "static/effnet0_nadam_.001lr_13.pt"
 
         self.model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=46)
         self.model.load_state_dict(torch.load(PATH))
