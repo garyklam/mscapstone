@@ -1,5 +1,6 @@
 import sqlite3
 
+
 class DB_Helper:
     def __init__(self):
         self.known_conn = sqlite3.connect('static/Species_info.db')
@@ -25,10 +26,9 @@ class DB_Helper:
         self.user_conn.commit()
         cursor.close()
 
-   def all_user_input(self):
+    def all_user_input(self):
         cursor = self.user_conn.cursor()
         cursor.execute("SELECT * FROM user_labels")
         entries = cursor.fetchall()
-
         cursor.close()
         return entries
